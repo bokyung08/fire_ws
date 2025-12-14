@@ -92,26 +92,21 @@ ros2 launch fire_bringup bringup_all.launch.py
 
 SLAM 지도 생성
 
-🔄 노드별 데이터 흐름 상세
+🔄 노드별 데이터 흐름 상세 
 A. 화재 감지 및 통신 (fire_vision)
 노드	입력 / 출력	설명
 fire_detector_onnx	입력: 웹캠(0번)
-출력: /fire_detected (Bool)	320×320으로 리사이즈된 영상을 ONNX 모델로 추론하여 화재 존재 여부 판단
+출력: /fire_detected, /fire_center_px	320×320 영상으로 ONNX 추론을 수행하고, 화재 존재 여부 및 화재 중심 픽셀 좌표를 퍼블리시
 fire_serial_sender	입력: /fire_detected
-출력: /dev/ttyUSB0	화재 감지 시 b'1'을 시리얼로 전송하여 외부 장치 제어
+출력: /dev/ttyUSB0	화재 감지 시 b'1'을 시리얼로 전송
 B. 거리 측정 파이프라인 (fire_distance)
 노드	입력 / 출력	설명
 fire_centering_node	입력: /fire_center_px
-출력: /cmd_vel, /fire/centered	화재 픽셀 좌표와 화면 중심 간 오차를 기반으로 P 제어를 수행하여 화재를 화면 중앙으로 정렬
+출력: /cmd_vel, /fire/centered	P 제어를 이용해 화재를 화면 중앙으로 정렬
 fire_rotation_measure_node	입력: /fire/centered, /fire_center_px, /imu
-출력: /fire/x0_px, /fire/x1_px, /fire/actual_delta_deg	정렬 완료 후 회전 전·후 픽셀 좌표와 IMU 기반 실제 회전 각도 측정
+출력: /fire/x0_px, /fire/x1_px, /fire/actual_delta_deg	회전 전·후 관측값 및 실제 회전각 측정
 fire_distance_controller_node	입력: /fire/x0_px, /fire/x1_px, /fire/actual_delta_deg
-출력: /fire/distance_batch	관측된 픽셀 변화량을 JSON 형태로 정리하여 거리 추정 데이터로 출력
-
-C. 지도 작성 및 위치 추정 (fire_slam)
-노드	입력 / 출력	설명
-sync_slam_toolbox_node	입력: /scan, /tf
-출력: /map, /tf	SLAM Toolbox를 이용한 실시간 지도 생성 및 로봇 위치 추정
+출력: /fire/distance_batch	관측 데이터를 출력
 
 🛠️ 개발 환경
 
