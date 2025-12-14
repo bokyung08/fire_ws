@@ -1,7 +1,7 @@
 # 🚒 ROS 2 화재 감지 및 거리 측정 시스템
 
 본 프로젝트는 **ROS 2 (Humble)** 기반으로  
-**화재 감지 → 로봇 제어 → 회전 기반 거리 측정 → SLAM 지도화**를 통합한  
+**화재 감지 → 로봇 제어 → 회전 기반 거리 측정 → 시리얼 통신**을 통합한  
 모듈형 로봇 시스템이다.
 
 단일 RGB 카메라와 회전 기하학을 활용하여 **추가 거리 센서 없이도**
@@ -93,21 +93,21 @@ ros2 launch fire_bringup bringup_all.launch.py
 SLAM 지도 생성
 
 🔄 노드별 데이터 흐름 상세 
-A. 화재 감지 및 통신 (fire_vision)
-노드	입력 / 출력	설명
-fire_detector_onnx	입력: 웹캠(0번)
-출력: /fire_detected, /fire_center_px	320×320 영상으로 ONNX 추론을 수행하고, 화재 존재 여부 및 화재 중심 픽셀 좌표를 퍼블리시
-fire_serial_sender	입력: /fire_detected
-출력: /dev/ttyUSB0	화재 감지 시 b'1'을 시리얼로 전송
-B. 거리 측정 파이프라인 (fire_distance)
-노드	입력 / 출력	설명
-fire_centering_node	입력: /fire_center_px
-출력: /cmd_vel, /fire/centered	P 제어를 이용해 화재를 화면 중앙으로 정렬
-fire_rotation_measure_node	입력: /fire/centered, /fire_center_px, /imu
-출력: /fire/x0_px, /fire/x1_px, /fire/actual_delta_deg	회전 전·후 관측값 및 실제 회전각 측정
-fire_distance_controller_node	입력: /fire/x0_px, /fire/x1_px, /fire/actual_delta_deg
-출력: /fire/distance_batch	관측 데이터를 출력
 
+A. 화재 감지 및 통신 (fire_vision)
+| 노드                 | 입력 / 출력                                               | 설명                                                       |
+| ------------------ | ----------------------------------------------------- | -------------------------------------------------------- |
+| fire_detector_onnx | 입력: 웹캠(0번)<br>출력: `/fire_detected`, `/fire_center_px` | 320×320 영상으로 ONNX 추론을 수행하고, 화재 존재 여부 및 화재 중심 픽셀 좌표를 퍼블리시 |
+| fire_serial_sender | 입력: `/fire_detected`<br>출력: `/dev/ttyUSB0`            | 화재 감지 시 `b'1'`을 시리얼로 전송                                  |
+
+B. 거리 측정 파이프라인 (fire_distance)
+| 노드                            | 입력 / 출력                                                                                                       | 설명                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| fire_centering_node           | 입력: `/fire_center_px`<br>출력: `/cmd_vel`, `/fire/centered`                                                     | P 제어를 이용해 화재를 화면 중앙으로 정렬 |
+| fire_rotation_measure_node    | 입력: `/fire/centered`, `/fire_center_px`, `/imu`<br>출력: `/fire/x0_px`, `/fire/x1_px`, `/fire/actual_delta_deg` | 회전 전·후 관측값 및 실제 회전각 측정   |
+| fire_distance_controller_node | 입력: `/fire/x0_px`, `/fire/x1_px`, `/fire/actual_delta_deg`<br>출력: `/fire/distance_batch`                      | 관측 데이터를 JSON 형태로 통합 출력   |
+
+---
 🛠️ 개발 환경
 
 OS: Ubuntu 22.04
