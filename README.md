@@ -32,6 +32,7 @@
 ---
 
 ## 🧩 시스템 아키텍처 개요
+```
 
 Camera
 │
@@ -57,7 +58,7 @@ Camera
 
 [ slam_toolbox ]
 └─ /map, /tf
-
+```
 
 
 ---
