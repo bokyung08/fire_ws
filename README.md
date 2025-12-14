@@ -90,7 +90,7 @@ ros2 launch fire_bringup bringup_all.launch.py
 
 회전 및 거리 관측
 
-SLAM 지도 생성
+SLAM 지도 수정 
 
 🔄 노드별 데이터 흐름 상세 
 
@@ -103,7 +103,7 @@ A. 화재 감지 및 통신 (fire_vision)
 B. 거리 측정 파이프라인 (fire_distance)
 | 노드                            | 입력 / 출력                                                                                                       | 설명                       |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| fire_centering_node           | 입력: `/fire_center_px`<br>출력: `/cmd_vel`, `/fire/centered`                                                     | P 제어를 이용해 화재를 화면 중앙으로 정렬 |
+| fire_centering_node           | 입력: `/fire_center_px`<br>출력: `/cmd_vel`, `/fire/centered`                                                     | 제어를 이용해 화재를 화면 중앙으로 정렬 |
 | fire_rotation_measure_node    | 입력: `/fire/centered`, `/fire_center_px`, `/imu`<br>출력: `/fire/x0_px`, `/fire/x1_px`, `/fire/actual_delta_deg` | 회전 전·후 관측값 및 실제 회전각 측정   |
 | fire_distance_controller_node | 입력: `/fire/x0_px`, `/fire/x1_px`, `/fire/actual_delta_deg`<br>출력: `/fire/distance_batch`                      | 관측 데이터를 JSON 형태로 통합 출력   |
 
